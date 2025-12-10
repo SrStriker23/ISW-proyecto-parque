@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Encuesta Parque Paleontológico Los Dedos - CIAHN</title>
     <style>
         /* --- ESTILOS GENERALES (CIAHN) --- */
@@ -198,6 +199,7 @@
         </div>
 
         <form id="form-container" onsubmit="submitForm(event)">
+             {% csrf_token %}
             <button type="button" class="back-btn" onclick="goBack()" data-translate="btn_back">Volver al inicio</button>
             <input type="hidden" id="form-type" name="form_type" value="">
 
@@ -469,13 +471,60 @@
             // Lógica para requerir campos si es necesario
         }
 
-        function submitForm(event) {
-            event.preventDefault();
-            console.log("Enviado. Tipo:", formTypeInput.value);
-            alert("¡Gracias! Tu opinión es vital para el Parque Los Dedos."); // Esto también se podría traducir si quieres
-            event.target.reset();
-            goBack();
-        }
+        
+
+        function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').content;
+}
+
+    async function enviarFormulario() {
+
+    const data = {
+        sector: document.querySelector("select[name=sector]").value,
+        nacionalidad: document.querySelector("select[name=nacionalidad]").value,
+        edad: document.querySelector("select[name=edad]").value,
+        motivo: document.querySelector("select[name=motivo]").value,
+
+        rate_sendero: Number(document.querySelector("input[name=rate_sendero]:checked")?.value || 0),
+        rate_info: Number(document.querySelector("input[name=rate_info]:checked")?.value || 0),
+        rate_limpieza: Number(document.querySelector("input[name=rate_limpieza]:checked")?.value || 0),
+        rate_personal: Number(document.querySelector("input[name=rate_personal]:checked")?.value || 0),
+
+        comentario_positivo: document.querySelector("textarea[name=comentario_positivo]").value,
+        comentario_negativo: document.querySelector("textarea[name=comentario_negativo]").value,
+        comentario_general: document.querySelector("textarea[name=comentario_general]").value,
+
+        nps: Number(document.querySelector("input[name=nps]:checked")?.value || 0),
+
+        consent: true,
+        language: window.lang || "es",
+        type: document.getElementById("form-type").value  // rápido o extenso
+    };
+
+    const response = await fetch("/api/submit/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(),
+        },
+        body: JSON.stringify(data)
+    });
+
+    return await response.json();
+}
+
+
+
+async function submitForm(event) {
+    event.preventDefault();
+    
+    await enviarFormulario();  // ← ESTE ERA EL PASO QUE FALTABA
+    
+    alert("¡Gracias! Tu opinión es vital para el Parque Los Dedos.");
+    event.target.reset();
+    goBack();
+}
+
     </script>
 </body>
 </html>

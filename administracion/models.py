@@ -95,6 +95,12 @@ class Response(models.Model):
     topics = models.JSONField(blank=True, null=True, help_text="Array de tópicos extraídos o tokens relevantes")
     score_text = models.FloatField(null=True, blank=True, help_text="score de positividad/algún algoritmo")
 
+    type = models.CharField(
+    max_length=10,
+    choices=[('short', 'Rápida'), ('full', 'Extensa')],
+    default='full'
+    )
+
     class Meta:
         ordering = ['-created_at']
         indexes = [
