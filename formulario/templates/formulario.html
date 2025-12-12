@@ -266,12 +266,9 @@
             <div class="form-section">
                 <label data-translate="label_sector">1. Sector a opinar:</label>
                 <select name="sector" required>
-                    <option value="" disabled selected data-translate="opt_select">Selecciona...</option>
-                    <option value="1" data-translate="opt_zone1">Zona 1: Acceso / Mandíbula</option>
-                    <option value="2" data-translate="opt_zone2">Zona 2: Fósiles Marinos</option>
-                    <option value="3" data-translate="opt_zone3">Zona 3: Formaciones Rocosas</option>
-                    <option value="4" data-translate="opt_zone4">Zona 4: Mirador Panorámico</option>
-                    <option value="5" data-translate="opt_zone5">Zona 5: Sendero General</option>
+                    {% for sector in sectores %}
+                    <option value="{{ sector.id }}">{{ sector.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
             

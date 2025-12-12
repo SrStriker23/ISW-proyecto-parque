@@ -10,7 +10,12 @@ def home(request):
     return render(request, 'index.html')
 
 def form(request):
-    return render(request,'formulario.html')
+    contexto = {
+        'periodos': Period.objects.all(),
+        'sectores': Sector.objects.all(),
+    }
+
+    return render(request,'formulario.html',contexto)
 
 @csrf_exempt
 def submitForm(request):
@@ -20,8 +25,8 @@ def submitForm(request):
     body = json.loads(request.body.decode("utf-8"))
 
     # Buscar sector
-    sector_code = body.get("sector")
-    sector = Sector.objects.filter(code=sector_code).first()
+    sector_id = body.get("sector")
+    sector = Sector.objects.filter(id=sector_id).first()
 
     # Periodo actual para estadísticas
     now = datetime.now()
